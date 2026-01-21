@@ -1,79 +1,64 @@
 # Guia de Instalação e Execução - SystemOS
 
-Este guia explica como levar a aplicação da sua máquina de desenvolvimento para a "Máquina do Fundo" (Servidor Local).
+Este guia explica como rodar a aplicação SystemOS em um servidor local (sua "Máquina do Fundo").
 
-## ⚠️ IMPORTANTE: Escolha UM caminho para o Banco de Dados
+## ✅ Pré-requisitos (O que instalar na outra máquina)
 
-Você tem duas opções para o banco de dados. **Não faça as duas coisas**, escolha apenas uma:
-
-- **Opção A (Recomendada - Mais Fácil)**: Instalar **Docker Desktop**. O Docker vai baixar e configurar o PostgreSQL automaticamente para você. **Não instale o PostgreSQL manualmente se usar esta opção.**
-- **Opção B (Manual)**: Instalar o **PostgreSQL** manualmente no Windows e configurar o banco e usuário na mão.
-
----
-
-## 1. Preparação na Máquina de Desenvolvimento (Aqui)
-
-Antes de ir para a outra máquina, vamos gerar os arquivos necessários.
-
-### Passo 1: Gerar o Executável (JAR) com Frontend Integrado
-Isso cria um arquivo único que contém o Backend e o Frontend juntos.
-
-1. Abra o terminal na pasta `frontend`.
-2. Gere o build do site:
-   ```powershell
-   ng build
-   ```
-3. Copie **todo o conteúdo** da pasta `frontend/dist/frontend/browser/` para a pasta `backend/src/main/resources/static/`.
-   *(Se a pasta static não existir, crie-a. Se tiver arquivos antigos lá, apague antes)*.
-
-4. Abra o terminal na pasta `backend`.
-5. Compile o projeto Java:
-   ```powershell
-   mvn clean package
-   ```
-   *(Ou `./mvnw clean package`)*
-
-6. O arquivo final estará em: `backend/target/backend-0.0.1-SNAPSHOT.jar`.
+1.  **Java JDK 17** (ou superior): Necessário para rodar o sistema.
+    *   [Baixar JDK 17](https://adoptium.net/)
+2.  **Banco de Dados**: Escolha **UMA** das opções abaixo:
+    *   **Opção A (Docker)**: Instale o [Docker Desktop](https://www.docker.com/products/docker-desktop/). (Recomendado)
+    *   **Opção B (Manual)**: Instale o [PostgreSQL 15+](https://www.postgresql.org/download/).
 
 ---
 
-## 2. Instalação na "Máquina do Fundo" (Lá)
+## 🚀 Como Instalar e Rodar
 
-### O que você precisa levar para lá:
-1. O arquivo **`backend-0.0.1-SNAPSHOT.jar`** (que você gerou acima).
-2. O arquivo **`docker-compose.yml`** (está na raiz do projeto).
-3. Instalar o **Java JDK 17+** na máquina.
+Você tem duas formas de levar o sistema para lá: **Baixar o Código (Git)** ou **Levar o Arquivo Pronto (JAR)**.
 
-### Passo a Passo no Computador do Fundo:
+### Método 1: Baixar o Código (Se você quiser mexer no código lá)
 
-#### Se você escolheu a Opção A (Docker):
-1. Instale o **Docker Desktop** para Windows e abra-o.
-2. Crie uma pasta (ex: `C:\SistemaOS`) e coloque os arquivos `backend-0.0.1-SNAPSHOT.jar` e `docker-compose.yml` dentro dela.
-3. Abra o PowerShell nessa pasta e rode:
-   ```powershell
-   docker-compose up -d
-   ```
-   *O Docker vai baixar o Postgres e iniciar o banco sozinho. Aguarde uns instantes.*
-4. Agora rode o sistema:
-   ```powershell
-   java -jar backend-0.0.1-SNAPSHOT.jar
-   ```
+1.  Instale o **Git** e o **Maven** na máquina.
+2.  Clone o projeto:
+    ```powershell
+    git clone https://github.com/marcofavero3/SystemOS.git
+    cd SystemOS
+    ```
+3.  Suba o banco de dados (se usar Docker):
+    ```powershell
+    docker-compose up -d
+    ```
+4.  Rode o sistema:
+    ```powershell
+    cd backend
+    ./mvnw spring-boot:run
+    ```
 
-#### Se você escolheu a Opção B (PostgreSQL Manual):
-1. Instale o PostgreSQL 15+ for Windows.
-2. Abra o pgAdmin (vem junto).
-3. Crie um banco de dados chamado `systemosdb`.
-4. Crie um usuário (role) chamado `systemos` com a senha `systemos`.
-   *(Se preferir usar outros dados, você terá que mudar o arquivo application.properties no código e gerar o JAR de novo).*
-5. Crie uma pasta, coloque o `backend-0.0.1-SNAPSHOT.jar` e rode:
-   ```powershell
-   java -jar backend-0.0.1-SNAPSHOT.jar
-   ```
+### Método 2: Levar o Arquivo Pronto (Mais Simples - Só para usar)
+
+Este método não precisa de Git ou Maven na outra máquina, apenas o Java.
+
+#### 1. Na sua máquina atual (Dev):
+1.  Gere o arquivo executável (que já inclui o Frontend):
+    *   Abra o terminal no `frontend` e rode: `ng build`
+    *   Copie o conteúdo de `dist/frontend/browser` para `backend/src/main/resources/static`.
+    *   Abra o terminal no `backend` e rode: `mvn clean package`
+2.  Pegue o arquivo gerado em `backend/target/backend-0.0.1-SNAPSHOT.jar`.
+
+#### 2. Na máquina do fundo (Servidor):
+1.  Crie uma pasta (ex: `C:\SistemaOS`).
+2.  Coloque o arquivo **`backend-0.0.1-SNAPSHOT.jar`** lá.
+3.  Se usar Docker, coloque também o **`docker-compose.yml`** e rode `docker-compose up -d`.
+4.  Inicie o sistema:
+    ```powershell
+    java -jar backend-0.0.1-SNAPSHOT.jar
+    ```
 
 ---
 
-## 3. Como Acessar
-- Na própria máquina do fundo: Abra o navegador e vá em `http://localhost:8080`
-- De outros computadores/celulares na mesma rede Wi-Fi:
-  1. Descubra o IP da máquina do fundo (abra o PowerShell nela e digite `ipconfig`, procure por IPv4, ex: `192.168.1.15`).
-  2. Acesse `http://192.168.1.15:8080`
+## 🌐 Como Acessar
+
+- **Na própria máquina:** `http://localhost:8080`
+- **De outro PC/Celular na rede:**
+  1.  Descubra o IP da máquina do fundo (comando `ipconfig`).
+  2.  Acesse `http://SEU_IP_AQUI:8080` (ex: `http://192.168.0.15:8080`).
