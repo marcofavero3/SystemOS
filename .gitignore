@@ -1,0 +1,24 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Backend (Java/Maven)
+target/
+*.class
+*.jar
+!backend/src/main/resources/static/frontend/browser/**
+
+# Frontend (Node/Angular)
+node_modules/
+dist/
+.angular/
+coverage/
